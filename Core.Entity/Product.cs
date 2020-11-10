@@ -17,6 +17,8 @@ namespace Core.Entity
         public string Type { get; set; }
 
         public DateTime CreatedDate { get; set; }
+                   //outcomment to work without auth
+        public bool IsComplete { get; set; }
 
     }
 }

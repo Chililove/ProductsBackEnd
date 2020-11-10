@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductsProject.Core.ApplicationService;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ProductsProject.Core.DomainService;
 
 namespace ProductsWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Produces("application/json")]
+    [Route("[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -18,13 +19,16 @@ namespace ProductsWebApi.Controllers
 
         public ProductsController(IProductService productService)
         {
+
             _productService = productService;
         }
         // GET: api/<ProductsController>
+        [Authorize]
         [HttpGet]
         public IEnumerable<Product> Get() => _productService.GetProducts();
 
         // GET api/<ProductsController>/5
+       // [Authorize(Roles = "Administrator")]
         [HttpGet("{id}")]
         public ActionResult<Product> Get(int id)
         {
@@ -32,6 +36,7 @@ namespace ProductsWebApi.Controllers
         }
 
         // POST api/<ProductsController>
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult<Product> Post([FromBody] Product product)
         {
@@ -39,6 +44,7 @@ namespace ProductsWebApi.Controllers
         }
 
         // PUT api/<ProductsController>/5
+      [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
         public ActionResult<Product> Put(int id, [FromBody] Product product)
         {
@@ -46,6 +52,7 @@ namespace ProductsWebApi.Controllers
         }
 
         // DELETE api/<ProductsController>/5
+       [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult<Product> Delete(int id)
         {

@@ -11,5 +11,6 @@ namespace ProductsProject.Infrastructure.Data
         public Context(DbContextOptions<Context> opt) : base(opt) { }
         
            public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users { get; set; } 
     } 
 }
