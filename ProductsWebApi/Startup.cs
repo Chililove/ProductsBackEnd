@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Core.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json;
 using ProductsProject.Core.ApplicationService;
 using ProductsProject.Core.ApplicationService.Service;
@@ -22,6 +16,7 @@ using ProductsProject.Core.DomainService;
 using ProductsProject.Infrastructure.Data;
 using ProductsProject.Infrastructure.Data.Helper;
 using ProductsProject.Infrastructure.Data.Repositories;
+using System;
 
 namespace ProductsWebApi
 {
@@ -50,13 +45,13 @@ namespace ProductsWebApi
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false,
-                  
+
                     ValidateIssuer = false,
-                   
+
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(secretBytes),
-                    ValidateLifetime = true, 
-                    ClockSkew = TimeSpan.FromMinutes(5) 
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(5)
                 };
             });
             //rvices.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
@@ -69,7 +64,7 @@ namespace ProductsWebApi
             services.AddScoped<IUserRepository<User>, UserRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
-           // services.AddScoped<IDBInitializer, DBInitializer>();
+            // services.AddScoped<IDBInitializer, DBInitializer>();
             services.AddTransient<IDBInitializer, DBInitializer>();
             services.AddSingleton<IAuthenticationHelper>(new
                Authenticationhelper(secretBytes));
@@ -87,22 +82,12 @@ namespace ProductsWebApi
                 services.AddDbContext<Context>(opt => { opt.UseSqlite("Data Source=ProductDb.db"); }
                 );
             }
-           /* else
+           else
             {
                 services.AddDbContext<Context>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
-            }*/
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: "CustomerAppAllowSpecificOrigins",
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin()
-                            .AllowAnyHeader()
-                            .WithMethods();
-                    });
-            });
+            }
+            
 
             services.AddControllers();
 
@@ -137,7 +122,7 @@ namespace ProductsWebApi
             }
             else
             {
-                app.UseHsts();
+                //app.UseHsts();
                 using (var scope = app.ApplicationServices.CreateScope())
                 {
                     var services = scope.ServiceProvider;
@@ -160,12 +145,11 @@ namespace ProductsWebApi
 
             app.UseRouting();
 
-            app.UseCors("CustomerAppAllowSpecificOrigins");
 
+            app.UseCors(builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
             app.UseAuthentication();
 
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -1,10 +1,8 @@
 ﻿using Core.Entity;
 using Microsoft.EntityFrameworkCore;
 using ProductsProject.Core.DomainService;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ProductsProject.Infrastructure.Data.Repositories
 {
@@ -15,7 +13,7 @@ namespace ProductsProject.Infrastructure.Data.Repositories
 
         private static List<Product> _productList = new List<Product>();
 
-        public ProductRepository(Context ctx) 
+        public ProductRepository(Context ctx)
         {
             _ctx = ctx;
         }
@@ -29,13 +27,18 @@ namespace ProductsProject.Infrastructure.Data.Repositories
 
         public Product Delete(int id)
         {
+            Product prod = GetProductById(id);
+            _ctx.Attach(prod).State = EntityState.Deleted;
+            _ctx.SaveChanges();
+            return prod;
+            /*
             Product p = GetAllProducts().Find(x => x.id == id);
             GetAllProducts().Remove(p);
             if (p != null)
-                {
+            {
                 return p;
-                }
-            return null;
+            }
+            return null;*/
         }
 
         public List<Product> GetAllProducts()
@@ -64,6 +67,8 @@ namespace ProductsProject.Infrastructure.Data.Repositories
                 product.CreatedDate = updateProduct.CreatedDate;
                 product.Type = updateProduct.Type;
             }
+            _ctx.Attach(product).State = EntityState.Modified;
+            _ctx.SaveChanges();
             return product;
         }
     }

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace ProductsProject.Infrastructure.Data.Helper
 {
@@ -17,7 +16,7 @@ namespace ProductsProject.Infrastructure.Data.Helper
             secretBytes = secret;
         }
 
-        
+
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
@@ -60,7 +59,7 @@ namespace ProductsProject.Infrastructure.Data.Helper
                                null, // audience - not needed (ValidateAudience = false)
                                claims.ToArray(),
                                DateTime.Now,               // notBefore
-                               DateTime.Now.AddMinutes(10)));  // expires
+                               DateTime.Now.AddMinutes(120)));  // expires
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

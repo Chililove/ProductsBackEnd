@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Core.Entity;
+﻿using Core.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using ProductsProject.Core.ApplicationService;
-using ProductsProject.Core.DomainService;
+using System;
+using System.Collections.Generic;
 
 namespace ProductsWebApi.Controllers
 {
@@ -28,7 +26,7 @@ namespace ProductsWebApi.Controllers
         public IEnumerable<Product> Get() => _productService.GetProducts();
 
         // GET api/<ProductsController>/5
-       // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         [HttpGet("{id}")]
         public ActionResult<Product> Get(int id)
         {
@@ -38,21 +36,40 @@ namespace ProductsWebApi.Controllers
         // POST api/<ProductsController>
         [Authorize(Roles = "Administrator")]
         [HttpPost]
-        public ActionResult<Product> Post([FromBody] Product product)
+        public ActionResult<Product> Post([FromBody] JObject data)
         {
-            return _productService.Create(product);
+            var opb = new Product
+            {
+                Name = data["name"].ToString(),
+                Color = data["color"].ToString(),
+                Type = data["type"].ToString(),
+                Price = Convert.ToDouble(data["price"].ToString()),
+                CreatedDate = DateTime.Now,
+                IsComplete = false
+            };
+
+            return _productService.Create(opb);
         }
 
         // PUT api/<ProductsController>/5
-      [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
-        public ActionResult<Product> Put(int id, [FromBody] Product product)
+        public ActionResult<Product> Put(int id, [FromBody] JObject data)
         {
-            return _productService.Update(product);
+            var opb = new Product
+            {
+                id = id,
+                Name = data["name"].ToString(),
+                Color = data["color"].ToString(),
+                Type = data["type"].ToString(),
+                Price = Convert.ToDouble(data["price"].ToString())
+            };
+
+            return _productService.Update(opb);
         }
 
         // DELETE api/<ProductsController>/5
-       [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult<Product> Delete(int id)
         {
